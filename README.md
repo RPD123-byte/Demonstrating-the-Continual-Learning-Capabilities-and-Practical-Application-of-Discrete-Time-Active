@@ -131,7 +131,3 @@ By analyzing these figures, we can observe how the active inference framework en
 ## Conclusion
 
 This project demonstrates the power of the active inference framework in optimizing research processes across various industries. By minimizing free energy and adapting to changing industry dynamics, the agent continuously learns and improves its strategies, offering a robust approach to exploration and exploitation in complex environments.
-
----
-
-This README now correctly formats the mathematical equations for proper display in Markdown and maintains a clear, comprehensive structure to explain the project’s principles and implementation.
