@@ -15,47 +15,56 @@ Active inference is a framework in computational neuroscience and artificial int
 
 In active inference, agents are not passive observers but active participants in their environment. They form beliefs about the world and then take actions to confirm or refute these beliefs. The process of belief updating and action selection is driven by the goal of minimizing expected free energy, which acts as a proxy for minimizing long-term surprise.
 
-Mathematical Foundations
-From Bayes' Rule to Free Energy Minimization
+## Mathematical Foundations
+
+### From Bayes' Rule to Free Energy Minimization
+
 The free energy principle is derived from Bayes' rule, which describes how to update beliefs (posterior) based on new evidence (observations):
 
-css
-Copy code
+```
 P(s|o) = P(o|s)P(s) / P(o)
-Where:
+```
 
-s represents hidden states of the world
-o represents observations
+Where:
+- `s` represents hidden states of the world
+- `o` represents observations
+
 The concept of surprise is mathematically expressed as the negative log probability of an observation:
 
-c
-Copy code
+```
 - log P(s|o) = - log P(o|s) - log P(s) + log P(o)
-Minimizing surprise directly is intractable because it requires knowing all possible states. Instead, we approximate the true posterior P(s|o) with a variational distribution Q(s):
+```
 
-css
-Copy code
+Minimizing surprise directly is intractable because it requires knowing all possible states. Instead, we approximate the true posterior `P(s|o)` with a variational distribution `Q(s)`:
+
+```
 - log P(o) = D_KL[Q(s) || P(s|o)] - ∫ Q(s) log [ P(o,s) / Q(s) ] ds
-The second term on the right is defined as the negative free energy F. Since the KL divergence D_KL is non-negative, minimizing free energy indirectly minimizes surprise:
+```
 
-r
-Copy code
+The second term on the right is defined as the negative free energy `F`. Since the KL divergence `D_KL` is non-negative, minimizing free energy indirectly minimizes surprise:
+
+```
 - log P(o) ≤ - F
-Free Energy as a Bound on Surprise
-Free energy F can be expressed as:
+```
 
-r
-Copy code
+### Free Energy as a Bound on Surprise
+
+Free energy `F` can be expressed as:
+
+```
 F = E_Q[log Q(s) - log P(o,s)]
+```
+
 This can be further decomposed into:
 
-css
-Copy code
+```
 F = D_KL[Q(s) || P(s)] - E_Q[log P(o|s)]
-Where:
+```
 
-The first term represents the divergence between the approximate posterior Q(s) and the prior P(s).
-The second term represents the expected likelihood of the observations given the hidden states.
+Where:
+- The first term represents the divergence between the approximate posterior `Q(s)` and the prior `P(s)`.
+- The second term represents the expected likelihood of the observations given the hidden states.
+
 By minimizing free energy, the agent minimizes an upper bound on surprise, effectively learning about its environment and making decisions that reduce uncertainty.
 
 ## Generative Model
@@ -125,4 +134,4 @@ This project demonstrates the power of the active inference framework in optimiz
 
 ---
 
-This README provides a comprehensive yet clear explanation of your project, focusing on the active inference framework, the hierarchical generative model, the mathematical foundations, and the results interpretation. It is designed to help users understand the underlying principles and implementation details of your research process exploration model.
+This README now correctly formats the mathematical equations for proper display in Markdown and maintains a clear, comprehensive structure to explain the project’s principles and implementation.
