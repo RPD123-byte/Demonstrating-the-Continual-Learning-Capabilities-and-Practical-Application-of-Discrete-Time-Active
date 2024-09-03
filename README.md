@@ -1,7 +1,3 @@
-Here’s the final version of the README that incorporates the mathematical foundations, implementation details, and the results interpretation from the previous drafts, along with the best aspects of the initial README:
-
----
-
 # Active Inference Framework for Optimal Research Process Exploration
 
 This repository implements an active inference framework designed to explore and exploit the optimal research process across different industries. The model demonstrates continuous learning and adaptation to changing environments, making it a powerful tool for understanding and optimizing research strategies in various industrial contexts.
@@ -19,56 +15,47 @@ Active inference is a framework in computational neuroscience and artificial int
 
 In active inference, agents are not passive observers but active participants in their environment. They form beliefs about the world and then take actions to confirm or refute these beliefs. The process of belief updating and action selection is driven by the goal of minimizing expected free energy, which acts as a proxy for minimizing long-term surprise.
 
-## Mathematical Foundations
-
-### From Bayes' Rule to Free Energy Minimization
-
+Mathematical Foundations
+From Bayes' Rule to Free Energy Minimization
 The free energy principle is derived from Bayes' rule, which describes how to update beliefs (posterior) based on new evidence (observations):
 
-\[
-P(s|o) = \frac{P(o|s)P(s)}{P(o)}
-\]
-
+css
+Copy code
+P(s|o) = P(o|s)P(s) / P(o)
 Where:
-- \( s \) represents hidden states of the world
-- \( o \) represents observations
 
+s represents hidden states of the world
+o represents observations
 The concept of surprise is mathematically expressed as the negative log probability of an observation:
 
-\[
--\log P(s|o) = -\log P(o|s) - \log P(s) + \log P(o)
-\]
+c
+Copy code
+- log P(s|o) = - log P(o|s) - log P(s) + log P(o)
+Minimizing surprise directly is intractable because it requires knowing all possible states. Instead, we approximate the true posterior P(s|o) with a variational distribution Q(s):
 
-Minimizing surprise directly is intractable because it requires knowing all possible states. Instead, we approximate the true posterior \( P(s|o) \) with a variational distribution \( Q(s) \):
+css
+Copy code
+- log P(o) = D_KL[Q(s) || P(s|o)] - ∫ Q(s) log [ P(o,s) / Q(s) ] ds
+The second term on the right is defined as the negative free energy F. Since the KL divergence D_KL is non-negative, minimizing free energy indirectly minimizes surprise:
 
-\[
--\log P(o) = D_{KL}[Q(s) \parallel P(s|o)] - \int Q(s) \log \left(\frac{P(o,s)}{Q(s)}\right) ds
-\]
+r
+Copy code
+- log P(o) ≤ - F
+Free Energy as a Bound on Surprise
+Free energy F can be expressed as:
 
-The second term on the right is defined as the negative free energy \( F \). Since the KL divergence \( D_{KL} \) is non-negative, minimizing free energy indirectly minimizes surprise:
-
-\[
--\log P(o) \leq -F
-\]
-
-### Free Energy as a Bound on Surprise
-
-Free energy \( F \) can be expressed as:
-
-\[
-F = \mathbb{E}_Q[\log Q(s) - \log P(o,s)]
-\]
-
+r
+Copy code
+F = E_Q[log Q(s) - log P(o,s)]
 This can be further decomposed into:
 
-\[
-F = D_{KL}[Q(s) \parallel P(s)] - \mathbb{E}_Q[\log P(o|s)]
-\]
-
+css
+Copy code
+F = D_KL[Q(s) || P(s)] - E_Q[log P(o|s)]
 Where:
-- The first term represents the divergence between the approximate posterior \( Q(s) \) and the prior \( P(s) \).
-- The second term represents the expected likelihood of the observations given the hidden states.
 
+The first term represents the divergence between the approximate posterior Q(s) and the prior P(s).
+The second term represents the expected likelihood of the observations given the hidden states.
 By minimizing free energy, the agent minimizes an upper bound on surprise, effectively learning about its environment and making decisions that reduce uncertainty.
 
 ## Generative Model
