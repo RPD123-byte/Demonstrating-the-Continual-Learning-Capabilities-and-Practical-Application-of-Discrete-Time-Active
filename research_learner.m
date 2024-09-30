@@ -1,12 +1,6 @@
 % This is an active inference routine for industry research using a discrete
 % state space MDP with predefined outcomes
 
-% Clear workspace and add necessary paths (adjust as needed)
-addpath('/Users/computer/ARC-AGI/spm12');
-addpath('/Users/computer/ARC-AGI/spm12/toolbox/DEM');
-addpath('/Users/computer/ARC-AGI/matlab_scripts');
-
-clear all
 
 N = 10; % Number of iterations (you can adjust this)
 
@@ -422,78 +416,4 @@ save('scores_data.mat', 'scores_1', 'scores_all');
 
 AfterSim = mdp; % after simulations
 
-
-% save agent_x BeforeSim AfterSim MMDP
-
-% 
-% % Display matrices/tensors for BeforeSim
-% disp('Displaying and saving matrices/tensors for BeforeSim:');
-% 
-% % Level 1 (MDP)
-% disp('Level 1 (MDP):');
-% for i = 1:length(BeforeSim.MDP.a)
-%     display_matrix(BeforeSim.MDP.a{i}, sprintf('BeforeSim_Level1_littlea%d', i), figureFolder);
-% end
-% for i = 1:length(BeforeSim.MDP.A)
-%     display_matrix(BeforeSim.MDP.A{i}, sprintf('BeforeSim_Level1_bigA%d', i), figureFolder);
-% end
-% % for i = 1:length(BeforeSim.MDP.B)
-% %     display_matrix(BeforeSim.MDP.B{i}, sprintf('BeforeSim_Level1_B%d', i), figureFolder);
-% % end
-% % for i = 1:length(BeforeSim.MDP.C)
-% %     display_matrix(BeforeSim.MDP.C{i}, sprintf('BeforeSim_Level1_C%d', i), figureFolder);
-% % end
-% % display_matrix(BeforeSim.MDP.D, 'BeforeSim_Level1_D', figureFolder);
-% % display_matrix(BeforeSim.MDP.V, 'BeforeSim_Level1_V', figureFolder);
-% 
-% % Level 2
-% disp('Level 2:');
-% for i = 1:length(BeforeSim.A)
-%     display_matrix(BeforeSim.A{i}, sprintf('BeforeSim_Level2_A%d', i), figureFolder);
-% end
-% % for i = 1:length(BeforeSim.B)
-% %     display_matrix(BeforeSim.B{i}, sprintf('BeforeSim_Level2_B%d', i), figureFolder);
-% % end
-% % for i = 1:length(BeforeSim.C)
-% %     display_matrix(BeforeSim.C{i}, sprintf('BeforeSim_Level2_C%d', i), figureFolder);
-% % end
-% % display_matrix(BeforeSim.D, 'BeforeSim_Level2_D', figureFolder);
-% % display_matrix(BeforeSim.U, 'BeforeSim_Level2_U', figureFolder);
-% 
-% % Display matrices/tensors for AfterSim
-% disp('Displaying and saving matrices/tensors for AfterSim:');
-% 
-% % Level 1 (MDP)
-% disp('Level 1 (MDP):');
-% for i = 1:length(AfterSim.MDP.a)
-%     display_matrix(AfterSim.MDP.a{i}, sprintf('AfterSim_Level1_littlea%d', i), figureFolder);
-% end
-% % for i = 1:length(AfterSim.MDP.A)
-% %     display_matrix(AfterSim.MDP.A{i}, sprintf('AfterSim_Level1_bigA%d', i), figureFolder);
-% % end
-% % for i = 1:length(AfterSim.MDP.B)
-% %     display_matrix(AfterSim.MDP.B{i}, sprintf('AfterSim_Level1_B%d', i), figureFolder);
-% % end
-% % for i = 1:length(AfterSim.MDP.C)
-% %     display_matrix(AfterSim.MDP.C{i}, sprintf('AfterSim_Level1_C%d', i), figureFolder);
-% % end
-% % display_matrix(AfterSim.MDP.D, 'AfterSim_Level1_D', figureFolder);
-% % display_matrix(AfterSim.MDP.V, 'AfterSim_Level1_V', figureFolder);
-% 
-% % Level 2
-% disp('Level 2:');
-% for i = 1:length(AfterSim.A)
-%     display_matrix(AfterSim.A{i}, sprintf('AfterSim_Level2_A%d', i), figureFolder);
-% end
-% % for i = 1:length(AfterSim.B)
-% %     display_matrix(AfterSim.B{i}, sprintf('AfterSim_Level2_B%d', i), figureFolder);
-% % end
-% % for i = 1:length(AfterSim.C)
-% %     display_matrix(AfterSim.C{i}, sprintf('AfterSim_Level2_C%d', i), figureFolder);
-% % end
-% % display_matrix(AfterSim.D, 'AfterSim_Level2_D', figureFolder);
-% % display_matrix(AfterSim.U, 'AfterSim_Level2_U', figureFolder);
-% 
-% disp('All matrices/tensors have been displayed and saved.');
-% 
 save('/Users/computer/ARC-AGI/all_variables_research_learner.mat');
