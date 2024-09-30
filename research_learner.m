@@ -416,4 +416,4 @@ save('scores_data.mat', 'scores_1', 'scores_all');
 
 AfterSim = mdp; % after simulations
 
-save('/Users/computer/ARC-AGI/all_variables_research_learner.mat');
+save('all_variables_research_learner.mat');
