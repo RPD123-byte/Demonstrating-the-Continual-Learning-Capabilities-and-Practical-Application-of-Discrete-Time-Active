@@ -389,7 +389,7 @@ fclose(fileID);
 
 save('iteration_outputs_all_industries.mat', 'output_data');
 
-figureFolder = '/Users/computer/ARC-AGI/figures2';
+figureFolder = 'figures2';
 
 
 % Plot and save the scores for the first industry
