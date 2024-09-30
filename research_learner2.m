@@ -1,4 +1,4 @@
-load('/Users/computer/ARC-AGI/all_variables_research_learner.mat');
+load('all_variables_research_learner.mat');
 
 figureFolder = '/Users/computer/ARC-AGI/figures3';
 
