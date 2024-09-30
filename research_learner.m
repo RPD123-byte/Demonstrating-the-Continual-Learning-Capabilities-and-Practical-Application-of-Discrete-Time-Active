@@ -2,13 +2,13 @@
 % state space MDP with predefined outcomes
 
 % Clear workspace and add necessary paths (adjust as needed)
-addpath('/Users/rithvikprakki/ARC-AGI/spm12');
-addpath('/Users/rithvikprakki/ARC-AGI/spm12/toolbox/DEM');
-addpath('/Users/rithvikprakki/ARC-AGI/matlab_scripts');
+addpath('/Users/computer/ARC-AGI/spm12');
+addpath('/Users/computer/ARC-AGI/spm12/toolbox/DEM');
+addpath('/Users/computer/ARC-AGI/matlab_scripts');
 
 clear all
 
-N = 1; % Number of iterations (you can adjust this)
+N = 10; % Number of iterations (you can adjust this)
 
 % First level L1
 
@@ -89,12 +89,14 @@ end
 
 a{1} = 512*A{1};
 a{2} = power(10,-1)*ones(size(A{2}));
-a{2} = power(10,-1)*A{2};
+% a{3} = power(10,-1)*ones(size(A{3}));
 
+
+% return
 % a{2} = 0.1 * ones(size(A{2}));
 % a{2}(A{2} == 1) = 0.4;
 
-a{3} = power(10,-1)*ones(size(A{3}));
+% a{3} = power(10,-1)*ones(size(A{3}));
 
 % controlled transitions: B{f} for each factor
 %--------------------------------------------------------------------------
@@ -184,11 +186,11 @@ end
 
 % C{2}: Preferences over outcomes (strong preference for excellent and good)
 C{2} = zeros(5, T);
-C{2}(1,:) = 2;  % Excellent
+C{2}(1,:) = 1;  % Excellent
 C{2}(2,:) = 1;  % Good
-C{2}(3,:) = 0;  % Neutral
+C{2}(3,:) = 1;  % Neutral
 C{2}(4,:) = 1; % Bad
-C{2}(5,:) = 2; % Terrible
+C{2}(5,:) = 1; % Terrible
 
 % C{3}: No preferences over industry cues
 C{3} = zeros(16, T);
@@ -205,7 +207,7 @@ mdp.D = d;                      % prior over initial states
 mdp.V = V;                      % allowable policies
 
 mdp.chi = -30;                  % Occam's threshold
-mdp.eta = 0.01;
+mdp.eta = 0.1;
 
 
 mdp.Aname = {'Research Process', 'Outcome', 'Industry Cue'};
@@ -283,8 +285,18 @@ mdp = spm_MDP_check(mdp);
 
 BeforeSim = mdp; % before simulations
 
-% Initialize array to store scores
-scores = zeros(1, N);
+% Initialize arrays to store scores
+scores_1 = zeros(1, N);  % For the first industry
+scores_all = zeros(1, N);  % For all 16 industries
+
+
+% Initialize a cell array to store the outputs
+output_data = cell(1, N);
+
+% Open a file to write the outputs
+fileID = fopen('iteration_outputs_all_industries.txt', 'w');
+
+
 
 for i = 1:N
     MMDP(i) = spm_MDP_VB_X(mdp);
@@ -292,44 +304,120 @@ for i = 1:N
     for j = 1:numel(mdp.MDP.a)
         mdp.MDP.a{j} = MMDP(i).mdp(end).a{j};
     end
-    
-    % Calculate the score for this iteration
-    score = 0;
-    
+
+    output = '';
     for industry = 1:16
+        output = [output sprintf('Industry %d:\n', industry)];
+        for process = 1:4
+            output = [output sprintf('Process %d:\n', process)];
+            
+            % Get the correct outcome for this process
+            correct_outcome = predefined_outcomes_1{industry, process};
+            outcome_map = containers.Map({'Excellent', 'Good', 'Neutral', 'Bad', 'Terrible'}, 1:5);
+            correct_index = outcome_map(correct_outcome);
+            
+            % Display a values with an asterisk for the correct outcome
+            a_values = mdp.MDP.a{2}(:, industry, process);
+            for k = 1:5
+                if k == correct_index
+                    output = [output sprintf('*%.4f\n', a_values(k))];
+                else
+                    output = [output sprintf(' %.4f\n', a_values(k))];
+                end
+            end
+            output = [output sprintf('\n')];
+        end
+        output = [output sprintf('\n')];
+    end
+    output_data{i} = output;
+    
+    % Write the output to the file
+    fprintf(fileID, 'Iteration %d:\n', i);
+    fprintf(fileID, '%s\n', output);
+    fprintf(fileID, '------------------------\n');
+
+
+    % Calculate the score for the first industry
+    score_1 = 0;
+    industry = 1;
+    fprintf('Iteration %d (Industry 1):\n', i);
+    for process = 1:4
+        % Get the values in the lowercase 'a' matrix
+        a_values = mdp.MDP.a{2}(:, industry, process);
+        % Get the correct outcome for this process
+        correct_outcome = predefined_outcomes_1{industry, process};
+        % Map the outcome to an index
+        outcome_map = containers.Map({'Excellent', 'Good', 'Neutral', 'Bad', 'Terrible'}, 1:5);
+        correct_index = outcome_map(correct_outcome);
+        % Calculate process score
+        correct_belief = a_values(correct_index);
+        incorrect_belief = max(a_values([1:correct_index-1, correct_index+1:end]));
+        process_score = (correct_belief - incorrect_belief + 1) / 2; % Normalize to [0, 1]
+        score_1 = score_1 + process_score;
+        % Debug output
+        fprintf('  Process %d: Correct outcome: %s, Agent belief: %.4f, Max incorrect belief: %.4f, Process score: %.4f\n', ...
+                process, correct_outcome, correct_belief, incorrect_belief, process_score);
+    end
+    scores_1(i) = score_1;
+    fprintf('  Total Score (Industry 1) = %.4f\n\n', score_1);
+
+    % Calculate the score for all 16 industries
+    score_all = 0;
+    fprintf('Iteration %d:\n', i);
+    for industry = 1:16
+        industry_score = 0;
         for process = 1:4
             % Get the values in the lowercase 'a' matrix
             a_values = mdp.MDP.a{2}(:, industry, process);
-            % Get the values in the uppercase 'A' matrix
-            A_values = mdp.MDP.A{2}(:, industry, process);
+            % Get the correct outcome for this process
+            correct_outcome = predefined_outcomes_1{industry, process};
+            % Map the outcome to an index
+            outcome_map = containers.Map({'Excellent', 'Good', 'Neutral', 'Bad', 'Terrible'}, 1:5);
+            correct_index = outcome_map(correct_outcome);
+            % Calculate process score
+            correct_belief = a_values(correct_index);
+            incorrect_belief = max(a_values([1:correct_index-1, correct_index+1:end]));
+            process_score = (correct_belief - incorrect_belief + 1) / 2; % Normalize to [0, 1]
+            industry_score = industry_score + process_score;
             
-            % Find the index of the true result (1 in the A matrix)
-            true_result_index = find(A_values == 1);
-            
-            % Add the corresponding value from the 'a' matrix to the score
-            score = score + a_values(true_result_index);
+            % Debug output for each process
+            fprintf('  Industry %d, Process %d: Correct outcome: %s, Correct belief: %.4f, Max incorrect belief: %.4f, Process score: %.4f\n', ...
+                    industry, process, correct_outcome, correct_belief, incorrect_belief, process_score);
         end
+        score_all = score_all + industry_score;
+        fprintf('  Industry %d Total Score: %.4f\n', industry, industry_score);
     end
-    
-    scores(i) = score; % Store the score for this iteration
-    
-    % Print the total score for this iteration
-    fprintf('Iteration %d: Total Score = %.4f\n', i, score);
+    scores_all(i) = score_all;
+    fprintf('Iteration %d: Total Score (All Industries) = %.4f\n\n', i, score_all);
 end
 
-figureFolder = '/Users/rithvikprakki/ARC-AGI/figures3';
+fclose(fileID);
+
+save('iteration_outputs_all_industries.mat', 'output_data');
+
+figureFolder = '/Users/computer/ARC-AGI/figures2';
 
 
-% Plot the score over time
+% Plot and save the scores for the first industry
 figure;
-plot(1:N, scores, '-o');
+plot(1:N, scores_1, '-o');
 xlabel('Iteration');
 ylabel('Score');
-title('Learning Progress of the Active Inference Agent');
+title('Learning Progress of the Active Inference Agent (Industry 1)');
 grid on;
+saveas(gcf, fullfile(figureFolder, 'learning_progress_industry1.png'));
 
-% Save the plot as a PNG file in the specified folder
-saveas(gcf, fullfile(figureFolder, 'learning_progress.png'));
+% Plot and save the scores for all industries
+figure;
+plot(1:N, scores_all, '-o');
+xlabel('Iteration');
+ylabel('Score');
+title('Learning Progress of the Active Inference Agent (All Industries)');
+grid on;
+saveas(gcf, fullfile(figureFolder, 'learning_progress_all_industries.png'));
+
+% Save the scores for later use
+save('scores_data.mat', 'scores_1', 'scores_all');
 
 
 AfterSim = mdp; % after simulations
@@ -408,4 +496,4 @@ AfterSim = mdp; % after simulations
 % 
 % disp('All matrices/tensors have been displayed and saved.');
 % 
-save('/Users/rithvikprakki/ARC-AGI/all_variables_research_learner.mat');
+save('/Users/computer/ARC-AGI/all_variables_research_learner.mat');

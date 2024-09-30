@@ -1,6 +1,6 @@
-load('/Users/rithvikprakki/ARC-AGI/all_variables_research_learner.mat');
+load('/Users/computer/ARC-AGI/all_variables_research_learner.mat');
 
-figureFolder = '/Users/rithvikprakki/ARC-AGI/figures4';
+figureFolder = '/Users/computer/ARC-AGI/figures3';
 
 % Define new outcomes for each industry
 predefined_outcomes_1 = get_predefined_outcomes(1);
@@ -46,7 +46,7 @@ end
 
 % Update the A matrices in the AfterSim structure
 AfterSim.MDP.A = A;
-AfterSim.MDP.eta = 0.01;
+AfterSim.MDP.eta = 0.1;
 AfterSim.MDP.D = d;
 AfterSim.MDP.beta = 0.5;
 % if isfield(AfterSim.MDP, 's')
@@ -72,9 +72,9 @@ save('modified_agent_x.mat', 'AfterSim');
 % Optional: Display a message to confirm the update
 disp('Environment modified and AfterSim structure updated.');
 
-% OPTIONS.figureFolder = "/Users/rithvikprakki/ARC-AGI/figures5";
+% OPTIONS.figureFolder = "/Users/computer/ARC-AGI/figures3";
 
-N_new = 15;
+N_new = 20;
 % illustrate a single trial
 %==========================================================================
 mdp = AfterSim;
@@ -82,7 +82,10 @@ mdp = AfterSim;
 
 BeforeSim = mdp; % before simulations
 % Initialize array to store scores
-scores = [scores zeros(1, N_new)]; % Extend the scores array
+
+load('scores_data.mat');
+
+scores = [scores_1 zeros(1, N_new)]; % Extend the scores array
 
 % Initialize a cell array to store the outputs
 output_data = cell(1, N + N_new);
@@ -109,28 +112,39 @@ for i = 1:N_new
     fprintf(fileID, '------------------------\n');
     
     % Calculate the total score for this iteration
-    total_score = 0;
+    score = 0;
     
-    for industry = 1:16
-        for process = 1:4
-            % Get the values in the lowercase 'a' matrix
-            a_values = mdp.MDP.a{2}(:, industry, process);
-            % Get the values in the uppercase 'A' matrix
-            A_values = mdp.MDP.A{2}(:, industry, process);
-            
-            % Calculate the score
-            for k = 1:5
-                if A_values(k) ~= 0
-                    total_score = total_score + (a_values(k) * A_values(k));
-                end
-            end
-        end
+    industry = 1;  % Only consider the first industry
+    fprintf('Iteration %d:\n', N + i);
+    for process = 1:4
+        % Get the values in the lowercase 'a' matrix
+        a_values = mdp.MDP.a{2}(:, industry, process);
+        
+        % Get the correct outcome for this process
+        correct_outcome = predefined_outcomes_2{industry, process};
+        
+        % Map the outcome to an index
+        outcome_map = containers.Map({'Excellent', 'Good', 'Neutral', 'Bad', 'Terrible'}, 1:5);
+        correct_index = outcome_map(correct_outcome);
+        
+        % Calculate process score
+        correct_belief = a_values(correct_index);
+        incorrect_belief = max(a_values([1:correct_index-1, correct_index+1:end]));
+        process_score = (correct_belief - incorrect_belief + 1) / 2;  % Normalize to [0, 1]
+        score = score + process_score;
+        
+        % Debug output
+        fprintf('  Process %d: Correct outcome: %s, Agent belief: %.4f, Max incorrect belief: %.4f, Process score: %.4f\n', ...
+                process, correct_outcome, correct_belief, incorrect_belief, process_score);
     end
     
-    scores(N + i) = total_score; % Store the total score for this iteration
+    
+    
+
+    scores(N + i) = score; % Store the total score for this iteration
     
     % Print the total score for this iteration
-    fprintf('Iteration %d: Total Score = %.4f\n', N + i, total_score);
+    fprintf('Iteration %d: Total Score = %.4f\n', N + i, score);
     
     % Commented out difference score calculation
     % new_score = 0;
@@ -307,4 +321,4 @@ end
 % 
 % disp('All matrices/tensors have been displayed and saved.');
 
-save('/Users/rithvikprakki/ARC-AGI/all_variables_research_learner2.mat');
+save('/Users/computer/ARC-AGI/all_variables_research_learner2.mat');
