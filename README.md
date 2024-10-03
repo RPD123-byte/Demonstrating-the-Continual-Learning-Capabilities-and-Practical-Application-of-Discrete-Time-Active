@@ -1,5 +1,7 @@
 # Active Inference Framework for Optimal Research Process Exploration
 
+Link to Paper: https://arxiv.org/abs/2410.00240
+
 This repository implements an active inference framework designed to explore and exploit the optimal research process across different industries. The model demonstrates continuous learning and adaptation to changing environments, making it a powerful tool for understanding and optimizing research strategies in various industrial contexts.
 
 ## Table of Contents
